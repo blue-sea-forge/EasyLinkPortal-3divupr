@@ -6,11 +6,7 @@
   },
   "theme": "classic-light",
   "tiles": [
-    { "label": "GitHub", "description": "Source code and issues", "url": "https://github.com", "icon": "git-branch" },
-    { "label": "OVHcloud", "description": "Hosting manager", "url": "https://www.ovh.com/manager/", "icon": "cloud" },
-    { "label": "MDN Web Docs", "description": "Web platform reference", "url": "https://developer.mozilla.org", "icon": "book-open" },
-    { "label": "Vite", "description": "Build tool documentation", "url": "https://vite.dev", "icon": "code" },
-    { "label": "React", "description": "Library documentation", "url": "https://react.dev", "icon": "globe" },
-    { "label": "Apache", "description": "Server documentation", "url": "https://httpd.apache.org/docs/", "icon": "server" }
+    { "label": "Moodle", "description": "Source d'entrainement", "url": "https://moodle.si-upr-3div.fr/", "icon": "graduation-cap" },
+    { "label": "Cours", "description": "Cours", "url": "https://google.com/", "icon": "file-text" }
   ]
 }
