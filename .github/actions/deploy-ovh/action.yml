@@ -91,12 +91,17 @@ runs:
 
         # The commands go through stdin so the password never shows up in the
         # process list. $DELETE_FLAG is unquoted so an empty value vanishes.
+        # lcd and cd come first and mirror gets no paths: when the target ends
+        # with a slash, lftp appends the source folder name to it, which put
+        # the site in www/dist/ instead of www/.
         lftp -f /dev/stdin <<LFTP_COMMANDS
         set cmd:fail-exit yes
         set net:max-retries 3
         set net:timeout 30
         set sftp:connect-program "ssh -a -x -o $HOST_CHECK -o UserKnownHostsFile=$KNOWN_HOSTS"
         open -u "$OVH_USER","$OVH_PASSWORD" "sftp://$OVH_HOST:$OVH_PORT"
-        mirror --reverse --verbose --parallel=2 --only-newer $DELETE_FLAG "$LOCAL_DIR" "$REMOTE_DIR"
+        lcd "$LOCAL_DIR"
+        cd "$REMOTE_DIR"
+        mirror --reverse --verbose --parallel=2 --only-newer $DELETE_FLAG
         bye
         LFTP_COMMANDS
