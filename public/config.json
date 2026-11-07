@@ -1,10 +1,10 @@
 {
   "$schema": "./config.schema.json",
   "brand": {
-    "name": "Easy Link Portal",
+    "name": "SI UPR 3ème Division",
     "logo": "/logo.svg"
   },
-  "theme": "classic-light",
+  "theme": "military",
   "tiles": [
     { "label": "Moodle", "description": "Source d'entrainement", "url": "https://moodle.si-upr-3div.fr/", "icon": "graduation-cap" },
     { "label": "Cours", "description": "Cours", "url": "https://google.com/", "icon": "file-text" }
