@@ -66,3 +66,20 @@ describe("validateConfig", () => {
     expect(errorsOf([])).toEqual(["The config must be a JSON object."]);
   });
 });
+
+describe("validateConfig: logos and background", () => {
+  it("keeps valid header logos and background", () => {
+    const config = {
+      ...validConfig,
+      brand: { ...validConfig.brand, logos: { left: "/images/a.jpg", right: "/images/b.jpg" }, background: "/images/bg.jpg" },
+    };
+    const result = validateConfig(config);
+    expect(result.ok && result.config.brand.logos).toEqual({ left: "/images/a.jpg", right: "/images/b.jpg" });
+    expect(result.ok && result.config.brand.background).toBe("/images/bg.jpg");
+  });
+
+  it("rejects a logo or background hosted on another site", () => {
+    const brand = { ...validConfig.brand, logos: { left: "https://other.test/a.jpg" }, background: "//other.test/bg.jpg" };
+    expect(errorsOf({ ...validConfig, brand })).toHaveLength(2);
+  });
+});

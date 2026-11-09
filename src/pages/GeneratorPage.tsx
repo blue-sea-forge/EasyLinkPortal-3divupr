@@ -54,7 +54,7 @@ function ConfigGenerator({ startingConfig, hasLoadFailed }: ConfigGeneratorProps
 
   return (
     <>
-      <Header name={startingConfig.brand.name} logoUrl={startingConfig.brand.logo} />
+      <Header name={startingConfig.brand.name} logoUrl={startingConfig.brand.logo} logos={startingConfig.brand.logos} />
       <main className="generator">
         <h1>Config generator</h1>
         <p className="generator-intro">

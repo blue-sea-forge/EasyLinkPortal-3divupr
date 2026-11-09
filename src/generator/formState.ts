@@ -1,4 +1,4 @@
-import { DEFAULT_ICON, type PortalConfig, type TileConfig } from "../config/portalConfig";
+import { DEFAULT_ICON, type HeaderLogos, type PortalConfig, type TileConfig } from "../config/portalConfig";
 import type { ThemeId } from "../theme/themes";
 
 /** A tile as typed in the form. Every field is text, and `key` keeps React rows stable when tiles move. */
@@ -15,6 +15,9 @@ export interface FormState {
   logo: string;
   theme: ThemeId;
   tiles: TileDraft[];
+  /** Not editable in the form. Kept so downloading a config does not drop them. */
+  logos?: HeaderLogos;
+  background?: string;
 }
 
 let nextTileKey = 0;
@@ -35,13 +38,15 @@ export function createFormState(config: PortalConfig): FormState {
     logo: config.brand.logo,
     theme: config.theme,
     tiles: config.tiles.map(createTileDraft),
+    logos: config.brand.logos,
+    background: config.brand.background,
   };
 }
 
 /** The shape of config.json, ready for validateConfig. */
 export function toConfigInput(form: FormState): unknown {
   return {
-    brand: { name: form.brandName, logo: form.logo },
+    brand: { name: form.brandName, logo: form.logo, logos: form.logos, background: form.background },
     theme: form.theme,
     tiles: form.tiles.map(({ label, description, url, icon }) => ({ label, description, url, icon })),
   };

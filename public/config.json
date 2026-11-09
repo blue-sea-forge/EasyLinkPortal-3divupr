@@ -2,7 +2,13 @@
   "$schema": "./config.schema.json",
   "brand": {
     "name": "SI UPR 3ème Division",
-    "logo": "/logo.svg"
+    "logo": "/logo.svg",
+    "logos": {
+      "left": "/images/left-logo.jpg",
+      "middle": "/images/middle-logo.jpg",
+      "right": "/images/right-logo.jpg"
+    },
+    "background": "/images/background.jpg"
   },
   "theme": "military",
   "tiles": [

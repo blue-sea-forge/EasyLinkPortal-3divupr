@@ -32,6 +32,33 @@
           "type": "string",
           "pattern": "^(/(?!/)|data:image/)",
           "description": "Path of an image on this site, such as /logo.svg. Images from other sites are blocked by the Content-Security-Policy."
+        },
+        "logos": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Images in the header. Each one is optional.",
+          "properties": {
+            "left": {
+              "type": "string",
+              "pattern": "^(/(?!/)|data:image/)",
+              "description": "Image on the left of the header, such as /images/left-logo.jpg."
+            },
+            "middle": {
+              "type": "string",
+              "pattern": "^(/(?!/)|data:image/)",
+              "description": "Image on the middle of the header, such as /images/middle-logo.jpg."
+            },
+            "right": {
+              "type": "string",
+              "pattern": "^(/(?!/)|data:image/)",
+              "description": "Image on the right of the header, such as /images/right-logo.jpg."
+            }
+          }
+        },
+        "background": {
+          "type": "string",
+          "pattern": "^(/(?!/)|data:image/)",
+          "description": "Image behind the whole page, such as /images/background.jpg."
         }
       }
     },

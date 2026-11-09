@@ -1,9 +1,18 @@
 import { DEFAULT_THEME, THEMES, isThemeId, type ThemeId } from "../theme/themes";
 import { ICON_NAMES, isIconName, type IconName } from "./icons";
 
+/** Images shown in the header. Each one is optional. */
+export interface HeaderLogos {
+  left?: string;
+  middle?: string;
+  right?: string;
+}
+
 export interface BrandConfig {
   name: string;
   logo: string;
+  logos?: HeaderLogos;
+  background?: string;
 }
 
 export interface TileConfig {
@@ -22,6 +31,8 @@ export interface PortalConfig {
 export type ValidationResult = { ok: true; config: PortalConfig } | { ok: false; errors: string[] };
 
 export const DEFAULT_ICON: IconName = "link";
+
+const HEADER_LOGO_POSITIONS = ["left", "middle", "right"] as const;
 
 /** Where config.schema.json sits relative to config.json. Editors use it for completion and checks. */
 export const CONFIG_SCHEMA_PATH = "./config.schema.json";
@@ -56,6 +67,30 @@ function readRequiredText(value: unknown, errorMessage: string, errors: string[]
   return "";
 }
 
+/** Returns the image path if it is valid, or records the error and returns undefined. `label` names the field in the message. */
+function readOptionalImagePath(value: unknown, label: string, errors: string[]): string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value === "string" && isLocalImagePath(value.trim())) return value.trim();
+
+  errors.push(`${label} must be a path on this site, such as "/images/logo.jpg". Images from other sites are blocked.`);
+  return undefined;
+}
+
+function validateHeaderLogos(raw: unknown, errors: string[]): HeaderLogos | undefined {
+  if (raw === undefined) return undefined;
+  if (!isObject(raw)) {
+    errors.push('"brand.logos" must be an object with left, middle and right images.');
+    return undefined;
+  }
+
+  const logos: HeaderLogos = {};
+  for (const position of HEADER_LOGO_POSITIONS) {
+    const path = readOptionalImagePath(raw[position], `Header logo "${position}"`, errors);
+    if (path) logos[position] = path;
+  }
+  return logos;
+}
+
 function validateBrand(raw: unknown, errors: string[]): BrandConfig {
   if (!isObject(raw)) {
     errors.push('"brand" is missing. It needs a name and a logo.');
@@ -67,7 +102,10 @@ function validateBrand(raw: unknown, errors: string[]): BrandConfig {
   if (logo && !isLocalImagePath(logo)) {
     errors.push('Brand logo must be a path on this site, such as "/logo.svg". Images from other sites are blocked.');
   }
-  return { name, logo };
+
+  const logos = validateHeaderLogos(raw.logos, errors);
+  const background = readOptionalImagePath(raw.background, "Background", errors);
+  return { name, logo, ...(logos && { logos }), ...(background && { background }) };
 }
 
 function validateTheme(raw: unknown, errors: string[]): ThemeId {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { applyBackground } from "../theme/background";
 import { applyTheme } from "../theme/themes";
 import { loadConfig } from "./loadConfig";
 import type { PortalConfig } from "./portalConfig";
@@ -8,7 +9,7 @@ export type ConfigState =
   | { status: "ready"; config: PortalConfig }
   | { status: "failed"; error: Error };
 
-/** Loads config.json once and applies its theme. */
+/** Loads config.json once and applies its theme and background. */
 export function useConfig(): ConfigState {
   const [state, setState] = useState<ConfigState>({ status: "loading" });
 
@@ -19,6 +20,7 @@ export function useConfig(): ConfigState {
       .then((config) => {
         if (isCancelled) return;
         applyTheme(config.theme);
+        applyBackground(config.brand.background);
         setState({ status: "ready", config });
       })
       .catch((error: Error) => {

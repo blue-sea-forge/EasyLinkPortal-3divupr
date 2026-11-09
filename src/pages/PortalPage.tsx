@@ -23,7 +23,7 @@ export function PortalPage() {
   const { brand, tiles } = state.config;
   return (
     <>
-      <Header name={brand.name} logoUrl={brand.logo} />
+      <Header name={brand.name} logoUrl={brand.logo} logos={brand.logos} />
       <main className="portal">
         <TileGrid tiles={tiles} />
       </main>
