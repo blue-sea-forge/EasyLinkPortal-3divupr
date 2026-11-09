@@ -6,8 +6,9 @@ export interface FileEntry {
   size: number;
 }
 
+/** Files of each browsed folder, keyed by the folder name used in config.json. */
 export interface FileManifest {
-  files: FileEntry[];
+  folders: Record<string, FileEntry[]>;
 }
 
 /** Written by the build (see build/fileManifest.ts). A browser cannot list a folder, so the list is made ahead of time. */
@@ -20,9 +21,9 @@ export async function loadManifest(): Promise<FileManifest> {
   }
 
   const content: unknown = await response.json();
-  const files = (content as FileManifest | null)?.files;
-  if (!Array.isArray(files)) throw new Error(`${FILE_MANIFEST_URL} is not valid: "files" must be a list.`);
-  return { files };
+  const folders = (content as FileManifest | null)?.folders;
+  if (typeof folders !== "object" || folders === null) throw new Error(`${FILE_MANIFEST_URL} is not valid: "folders" must be an object.`);
+  return { folders };
 }
 
 export interface FolderListing {

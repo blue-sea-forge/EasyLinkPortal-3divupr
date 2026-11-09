@@ -72,17 +72,25 @@ describe("validateConfig: logos, background and file browser", () => {
     const config = {
       ...validConfig,
       brand: { ...validConfig.brand, logos: { left: "/images/a.jpg", right: "/images/b.jpg" }, background: "/images/bg.jpg" },
-      fileBrowser: { folder: "files", title: " Documents " },
+      fileBrowsers: [{ folder: "files", title: " Documents " }, { folder: "archives" }],
     };
     const result = validateConfig(config);
     expect(result.ok && result.config.brand.logos).toEqual({ left: "/images/a.jpg", right: "/images/b.jpg" });
     expect(result.ok && result.config.brand.background).toBe("/images/bg.jpg");
-    expect(result.ok && result.config.fileBrowser).toEqual({ folder: "files", title: "Documents" });
+    expect(result.ok && result.config.fileBrowsers).toEqual([
+      { folder: "files", title: "Documents" },
+      { folder: "archives", title: "archives" },
+    ]);
   });
 
-  it("uses a default title for the file browser", () => {
-    const result = validateConfig({ ...validConfig, fileBrowser: { folder: "files" } });
-    expect(result.ok && result.config.fileBrowser).toEqual({ folder: "files", title: "Files" });
+  it("uses the folder name as title when none is given", () => {
+    const result = validateConfig({ ...validConfig, fileBrowsers: [{ folder: "files" }] });
+    expect(result.ok && result.config.fileBrowsers).toEqual([{ folder: "files", title: "files" }]);
+  });
+
+  it("rejects two file browsers on the same folder", () => {
+    const config = { ...validConfig, fileBrowsers: [{ folder: "files" }, { folder: "files", title: "Again" }] };
+    expect(errorsOf(config)).toEqual(['Folder "files" is used by more than one file browser.']);
   });
 
   it("rejects a logo or background hosted on another site", () => {
@@ -91,7 +99,7 @@ describe("validateConfig: logos, background and file browser", () => {
   });
 
   it("rejects a file browser folder that could leave public/", () => {
-    expect(errorsOf({ ...validConfig, fileBrowser: { folder: "../secrets" } })[0]).toContain("File browser folder");
-    expect(errorsOf({ ...validConfig, fileBrowser: { folder: "a/b" } })[0]).toContain("File browser folder");
+    expect(errorsOf({ ...validConfig, fileBrowsers: [{ folder: "../secrets" }] })[0]).toContain("File browser 1: folder");
+    expect(errorsOf({ ...validConfig, fileBrowsers: [{ folder: "a/b" }] })[0]).toContain("File browser 1: folder");
   });
 });

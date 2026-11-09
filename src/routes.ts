@@ -14,3 +14,10 @@ export function isGeneratorPath(pathname: string): boolean {
 export function isFileBrowserPath(pathname: string): boolean {
   return withoutTrailingSlashes(pathname) === FILE_BROWSER_PATH;
 }
+
+/** Address of a file browser page, or of one of its subfolders. The folder to browse is in "?folder=" and the subfolder in "?path=". */
+export function fileBrowserHref(folder: string, subfolder = ""): string {
+  const query = new URLSearchParams({ folder });
+  if (subfolder !== "") query.set("path", subfolder);
+  return `${FILE_BROWSER_PATH}/?${query}`;
+}

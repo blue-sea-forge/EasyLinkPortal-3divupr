@@ -18,7 +18,7 @@ export interface FormState {
   /** Not editable in the form. Kept so downloading a config does not drop them. */
   logos?: HeaderLogos;
   background?: string;
-  fileBrowser?: FileBrowserConfig;
+  fileBrowsers?: FileBrowserConfig[];
 }
 
 let nextTileKey = 0;
@@ -41,7 +41,7 @@ export function createFormState(config: PortalConfig): FormState {
     tiles: config.tiles.map(createTileDraft),
     logos: config.brand.logos,
     background: config.brand.background,
-    fileBrowser: config.fileBrowser,
+    fileBrowsers: config.fileBrowsers,
   };
 }
 
@@ -49,7 +49,7 @@ export function createFormState(config: PortalConfig): FormState {
 export function toConfigInput(form: FormState): unknown {
   return {
     brand: { name: form.brandName, logo: form.logo, logos: form.logos, background: form.background },
-    fileBrowser: form.fileBrowser,
+    fileBrowsers: form.fileBrowsers,
     theme: form.theme,
     tiles: form.tiles.map(({ label, description, url, icon }) => ({ label, description, url, icon })),
   };

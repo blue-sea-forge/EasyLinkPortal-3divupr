@@ -4,7 +4,7 @@ import { LoadingNotice } from "../components/LoadingNotice";
 import { StatusPage } from "../components/StatusPage";
 import { TileGrid } from "../components/TileGrid";
 import type { TileConfig } from "../config/portalConfig";
-import { FILE_BROWSER_PATH } from "../routes";
+import { fileBrowserHref } from "../routes";
 import { useConfig } from "../config/useConfig";
 
 export function PortalPage() {
@@ -22,15 +22,18 @@ export function PortalPage() {
   // The details are in the console. Visitors only need to know the page is broken.
   if (state.status === "failed") return <StatusPage code={500} />;
 
-  const { brand, tiles, fileBrowser } = state.config;
-  const fileBrowserTile: TileConfig | null = fileBrowser
-    ? { label: fileBrowser.title, description: "Browse and download files", url: `${FILE_BROWSER_PATH}/`, icon: "folder" }
-    : null;
+  const { brand, tiles, fileBrowsers = [] } = state.config;
+  const fileBrowserTiles: TileConfig[] = fileBrowsers.map(({ folder, title }) => ({
+    label: title,
+    description: "Browse and download files",
+    url: fileBrowserHref(folder),
+    icon: "folder",
+  }));
   return (
     <>
       <Header name={brand.name} logoUrl={brand.logo} logos={brand.logos} />
       <main className="portal">
-        <TileGrid tiles={fileBrowserTile ? [...tiles, fileBrowserTile] : tiles} />
+        <TileGrid tiles={[...tiles, ...fileBrowserTiles]} />
       </main>
     </>
   );

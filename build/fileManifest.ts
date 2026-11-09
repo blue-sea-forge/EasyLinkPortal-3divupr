@@ -21,33 +21,41 @@ export function scanFolder(folder: string, relativePath = ""): FileEntry[] {
   return entries.sort((a, b) => a.path.localeCompare(b.path));
 }
 
-/** Reads fileBrowser.folder from config.json. Returns null when the file browser is not configured. */
-function readBrowsedFolder(publicDir: string): string | null {
+/** Reads the folder names from fileBrowsers in config.json. Returns an empty list when no file browser is configured. */
+function readBrowsedFolders(publicDir: string): string[] {
   const configPath = join(publicDir, "config.json");
-  if (!existsSync(configPath)) return null;
+  if (!existsSync(configPath)) return [];
 
-  const folder = JSON.parse(readFileSync(configPath, "utf-8"))?.fileBrowser?.folder;
-  if (folder === undefined) return null;
-  if (typeof folder !== "string" || !isValidFolderName(folder)) {
-    throw new Error(`fileBrowser.folder in ${configPath} must be one folder name inside public/, such as "files".`);
-  }
-  return folder;
+  const browsers = JSON.parse(readFileSync(configPath, "utf-8"))?.fileBrowsers ?? [];
+  if (!Array.isArray(browsers)) throw new Error(`fileBrowsers in ${configPath} must be a list.`);
+
+  return browsers.map((browser) => {
+    if (typeof browser?.folder !== "string" || !isValidFolderName(browser.folder)) {
+      throw new Error(`Each fileBrowsers entry in ${configPath} needs a folder that is one folder name inside public/, such as "files".`);
+    }
+    return browser.folder;
+  });
 }
 
+/** Returns the manifest as JSON text, or null when no file browser is configured. */
 function buildManifestJson(publicDir: string): string | null {
-  const folder = readBrowsedFolder(publicDir);
-  if (folder === null) return null;
+  const folderNames = readBrowsedFolders(publicDir);
+  if (folderNames.length === 0) return null;
 
-  const folderPath = join(publicDir, folder);
-  if (!existsSync(folderPath)) {
-    throw new Error(`The file browser folder ${folderPath} does not exist. Create it or change fileBrowser.folder in config.json.`);
+  const folders: Record<string, FileEntry[]> = {};
+  for (const folderName of folderNames) {
+    const folderPath = join(publicDir, folderName);
+    if (!existsSync(folderPath)) {
+      throw new Error(`The file browser folder ${folderPath} does not exist. Create it or remove it from fileBrowsers in config.json.`);
+    }
+    folders[folderName] = scanFolder(folderPath);
   }
-  return JSON.stringify({ files: scanFolder(folderPath) });
+  return JSON.stringify({ folders });
 }
 
 /**
- * The file browser runs in the browser, which cannot list a server folder.
- * This plugin scans the folder named in config.json and serves the result as
+ * The file browsers run in the browser, which cannot list a server folder.
+ * This plugin scans the folders named in config.json and serves the result as
  * files-manifest.json: computed on each request in development, written once
  * into dist/ at build time. Files added to the server after the build do not
  * show up until the next build.

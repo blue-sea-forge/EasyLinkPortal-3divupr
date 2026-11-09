@@ -8,11 +8,11 @@ The header needs three images (left, middle, right) and the pages need a backgro
 
 1. Logos and background are paths in `config.json` (`brand.logos`, `brand.background`), validated like `brand.logo`. The background is applied by setting a CSS variable from JavaScript (`src/theme/background.ts`), because an inline `style` attribute would be blocked by the CSP. The path is written as a quoted CSS string so a quote in the config cannot end the `url()`.
 
-2. The file browser is the page `/file-browser/`, built as a copy of the app shell like the generator page. The folder shown is `fileBrowser.folder` in `config.json`. It must be a single name (`[A-Za-z0-9_-]+`) so the config cannot point outside `public/`.
+2. The file browser is the page `/file-browser/`, built as a copy of the app shell like the generator page. The folders shown are the `folder` values of `fileBrowsers` in `config.json`, a list so that several folders can be shared. The page picks one with `?folder=` (the first when missing, a 404 for a folder not in the list). Each must be a single name (`[A-Za-z0-9_-]+`) so the config cannot point outside `public/`.
 
-3. A browser cannot list a folder, and `Options -Indexes` is on. A Vite plugin (`build/fileManifest.ts`) scans the folder at build time and writes `files-manifest.json`. The page builds its folder view from that flat list. The current subfolder is in `?path=`, because Apache only serves files that exist and the app has no router. Dotfiles are left out of the list. Downloads use a plain link with the `download` attribute, so no script is involved.
+3. A browser cannot list a folder, and `Options -Indexes` is on. A Vite plugin (`build/fileManifest.ts`) scans the folder at build time and writes `files-manifest.json`. `files-manifest.json` holds one flat list per folder, keyed by folder name, and the page builds its folder view from the list of the chosen folder. The current subfolder is in `?path=`, because Apache only serves files that exist and the app has no router. Dotfiles are left out of the list. Downloads use a plain link with the `download` attribute, so no script is involved.
 
-4. The generator keeps `logos`, `background` and `fileBrowser` from the current config and writes them back, so downloading a config does not remove them. They are not editable in the form.
+4. The generator keeps `logos`, `background` and `fileBrowsers` from the current config and writes them back, so downloading a config does not remove them. They are not editable in the form.
 
 ## Alternatives rejected
 

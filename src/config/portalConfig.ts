@@ -19,6 +19,7 @@ export interface BrandConfig {
 export interface FileBrowserConfig {
   /** Name of a folder inside public/ whose files visitors can browse and download. */
   folder: string;
+  /** Name of the tile and of the page. Defaults to the folder name. */
   title: string;
 }
 
@@ -33,14 +34,12 @@ export interface PortalConfig {
   brand: BrandConfig;
   theme: ThemeId;
   tiles: TileConfig[];
-  fileBrowser?: FileBrowserConfig;
+  fileBrowsers?: FileBrowserConfig[];
 }
 
 export type ValidationResult = { ok: true; config: PortalConfig } | { ok: false; errors: string[] };
 
 export const DEFAULT_ICON: IconName = "link";
-
-export const DEFAULT_FILE_BROWSER_TITLE = "Files";
 
 const HEADER_LOGO_POSITIONS = ["left", "middle", "right"] as const;
 
@@ -162,21 +161,36 @@ function validateTiles(raw: unknown, errors: string[]): TileConfig[] {
   return raw.map((tile, index) => validateTile(tile, index, errors));
 }
 
-function validateFileBrowser(raw: unknown, errors: string[]): FileBrowserConfig | undefined {
-  if (raw === undefined) return undefined;
+function validateFileBrowser(raw: unknown, index: number, errors: string[]): FileBrowserConfig | undefined {
+  const position = `File browser ${index + 1}`;
   if (!isObject(raw)) {
-    errors.push('"fileBrowser" must be an object with a folder.');
+    errors.push(`${position} must be an object with a folder.`);
     return undefined;
   }
 
   const folder = typeof raw.folder === "string" ? raw.folder.trim() : "";
   if (!isValidFolderName(folder)) {
-    errors.push('File browser folder must be the name of one folder inside public/, such as "files". Use letters, digits, "-" and "_" only.');
+    errors.push(`${position}: folder must be the name of one folder inside public/, such as "files". Use letters, digits, "-" and "_" only.`);
     return undefined;
   }
 
-  const title = typeof raw.title === "string" && raw.title.trim() !== "" ? raw.title.trim() : DEFAULT_FILE_BROWSER_TITLE;
+  const title = typeof raw.title === "string" && raw.title.trim() !== "" ? raw.title.trim() : folder;
   return { folder, title };
+}
+
+function validateFileBrowsers(raw: unknown, errors: string[]): FileBrowserConfig[] | undefined {
+  if (raw === undefined) return undefined;
+  if (!Array.isArray(raw)) {
+    errors.push('"fileBrowsers" must be a list.');
+    return undefined;
+  }
+
+  const browsers = raw.map((item, index) => validateFileBrowser(item, index, errors)).filter((item) => item !== undefined);
+  // Two browsers on one folder would show the same files twice under different tiles.
+  const folders = browsers.map((browser) => browser.folder);
+  const duplicate = folders.find((folder, index) => folders.indexOf(folder) !== index);
+  if (duplicate) errors.push(`Folder "${duplicate}" is used by more than one file browser.`);
+  return browsers;
 }
 
 /** Checks data coming from config.json or from the generator form. Collects every problem instead of stopping at the first. */
@@ -187,8 +201,8 @@ export function validateConfig(input: unknown): ValidationResult {
   const brand = validateBrand(input.brand, errors);
   const theme = validateTheme(input.theme, errors);
   const tiles = validateTiles(input.tiles, errors);
-  const fileBrowser = validateFileBrowser(input.fileBrowser, errors);
+  const fileBrowsers = validateFileBrowsers(input.fileBrowsers, errors);
 
   if (errors.length > 0) return { ok: false, errors };
-  return { ok: true, config: { brand, theme, tiles, ...(fileBrowser && { fileBrowser }) } };
+  return { ok: true, config: { brand, theme, tiles, ...(fileBrowsers?.length && { fileBrowsers }) } };
 }
