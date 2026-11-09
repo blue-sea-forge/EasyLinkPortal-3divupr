@@ -1,4 +1,5 @@
 import { DEFAULT_THEME, THEMES, isThemeId, type ThemeId } from "../theme/themes";
+import { isValidFolderName } from "../files/folderName";
 import { ICON_NAMES, isIconName, type IconName } from "./icons";
 
 /** Images shown in the header. Each one is optional. */
@@ -15,6 +16,12 @@ export interface BrandConfig {
   background?: string;
 }
 
+export interface FileBrowserConfig {
+  /** Name of a folder inside public/ whose files visitors can browse and download. */
+  folder: string;
+  title: string;
+}
+
 export interface TileConfig {
   label: string;
   description?: string;
@@ -26,11 +33,14 @@ export interface PortalConfig {
   brand: BrandConfig;
   theme: ThemeId;
   tiles: TileConfig[];
+  fileBrowser?: FileBrowserConfig;
 }
 
 export type ValidationResult = { ok: true; config: PortalConfig } | { ok: false; errors: string[] };
 
 export const DEFAULT_ICON: IconName = "link";
+
+export const DEFAULT_FILE_BROWSER_TITLE = "Files";
 
 const HEADER_LOGO_POSITIONS = ["left", "middle", "right"] as const;
 
@@ -152,6 +162,23 @@ function validateTiles(raw: unknown, errors: string[]): TileConfig[] {
   return raw.map((tile, index) => validateTile(tile, index, errors));
 }
 
+function validateFileBrowser(raw: unknown, errors: string[]): FileBrowserConfig | undefined {
+  if (raw === undefined) return undefined;
+  if (!isObject(raw)) {
+    errors.push('"fileBrowser" must be an object with a folder.');
+    return undefined;
+  }
+
+  const folder = typeof raw.folder === "string" ? raw.folder.trim() : "";
+  if (!isValidFolderName(folder)) {
+    errors.push('File browser folder must be the name of one folder inside public/, such as "files". Use letters, digits, "-" and "_" only.');
+    return undefined;
+  }
+
+  const title = typeof raw.title === "string" && raw.title.trim() !== "" ? raw.title.trim() : DEFAULT_FILE_BROWSER_TITLE;
+  return { folder, title };
+}
+
 /** Checks data coming from config.json or from the generator form. Collects every problem instead of stopping at the first. */
 export function validateConfig(input: unknown): ValidationResult {
   if (!isObject(input)) return { ok: false, errors: ["The config must be a JSON object."] };
@@ -160,7 +187,8 @@ export function validateConfig(input: unknown): ValidationResult {
   const brand = validateBrand(input.brand, errors);
   const theme = validateTheme(input.theme, errors);
   const tiles = validateTiles(input.tiles, errors);
+  const fileBrowser = validateFileBrowser(input.fileBrowser, errors);
 
   if (errors.length > 0) return { ok: false, errors };
-  return { ok: true, config: { brand, theme, tiles } };
+  return { ok: true, config: { brand, theme, tiles, ...(fileBrowser && { fileBrowser }) } };
 }

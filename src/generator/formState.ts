@@ -1,4 +1,4 @@
-import { DEFAULT_ICON, type HeaderLogos, type PortalConfig, type TileConfig } from "../config/portalConfig";
+import { DEFAULT_ICON, type FileBrowserConfig, type HeaderLogos, type PortalConfig, type TileConfig } from "../config/portalConfig";
 import type { ThemeId } from "../theme/themes";
 
 /** A tile as typed in the form. Every field is text, and `key` keeps React rows stable when tiles move. */
@@ -18,6 +18,7 @@ export interface FormState {
   /** Not editable in the form. Kept so downloading a config does not drop them. */
   logos?: HeaderLogos;
   background?: string;
+  fileBrowser?: FileBrowserConfig;
 }
 
 let nextTileKey = 0;
@@ -40,6 +41,7 @@ export function createFormState(config: PortalConfig): FormState {
     tiles: config.tiles.map(createTileDraft),
     logos: config.brand.logos,
     background: config.brand.background,
+    fileBrowser: config.fileBrowser,
   };
 }
 
@@ -47,6 +49,7 @@ export function createFormState(config: PortalConfig): FormState {
 export function toConfigInput(form: FormState): unknown {
   return {
     brand: { name: form.brandName, logo: form.logo, logos: form.logos, background: form.background },
+    fileBrowser: form.fileBrowser,
     theme: form.theme,
     tiles: form.tiles.map(({ label, description, url, icon }) => ({ label, description, url, icon })),
   };

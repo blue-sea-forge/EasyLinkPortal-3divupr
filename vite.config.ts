@@ -3,19 +3,20 @@ import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import type { Plugin } from "vite";
 import { defineConfig } from "vitest/config";
+import { fileManifest } from "./build/fileManifest.ts";
 
 /** Status codes Apache is configured to answer with a page (see .htaccess). */
 const ERROR_PAGE_STATUSES = [400, 404, 500];
 
-/** Folder holding the generator page. Apache serves its index.html for /generate-config/. */
-const GENERATOR_FOLDER = "generate-config";
+/** Folders holding one page each. Apache serves their index.html for /generate-config/ and /file-browser/. */
+const PAGE_FOLDERS = ["generate-config", "file-browser"];
 
 /**
  * Apache can only serve files that exist, but the app is a single HTML shell.
  * This writes copies of the shell where Apache needs them:
  * - one per error code, with the http-status meta changed. The app reads that
  *   meta at startup to know which status page to show.
- * - one for the generator page, which the app recognizes from the URL.
+ * - one per page folder (generator, file browser), which the app recognizes from the URL.
  */
 function staticPages(): Plugin {
   let outDir = "";
@@ -39,14 +40,16 @@ function staticPages(): Plugin {
         writeFileSync(resolve(outDir, `${status}.html`), page);
       }
 
-      mkdirSync(resolve(outDir, GENERATOR_FOLDER), { recursive: true });
-      writeFileSync(resolve(outDir, GENERATOR_FOLDER, "index.html"), shell);
+      for (const folder of PAGE_FOLDERS) {
+        mkdirSync(resolve(outDir, folder), { recursive: true });
+        writeFileSync(resolve(outDir, folder, "index.html"), shell);
+      }
     },
   };
 }
 
 export default defineConfig({
-  plugins: [react(), staticPages()],
+  plugins: [react(), staticPages(), fileManifest()],
   test: {
     environment: "jsdom",
     globals: true,

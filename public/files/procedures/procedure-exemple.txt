@@ -1,0 +1,5 @@
+Procedure de test
+
+1. Ouvrir le portail.
+2. Cliquer sur Fichiers.
+3. Telecharger ce fichier.

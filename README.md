@@ -35,6 +35,7 @@ Everything shown on the home page comes from `public/config.json`: the name, the
 
 - `brand.logos` is optional and has `left`, `middle` and `right` images for the header, as paths in `public/`. Without `left`, `brand.logo` is shown on the left. The middle image sits next to the name.
 - `brand.background` is optional: an image shown behind every page.
+- `fileBrowser` is optional, see File browser below.
 
 `config.schema.json` describes the format. `config.json` points to it with `$schema`, so editors such as VS Code suggest the valid values and flag mistakes while you type. The generator keeps that line in the files it downloads.
 
@@ -43,6 +44,12 @@ If the file is missing or invalid, the portal shows the 500 page and the browser
 ### Config generator
 
 Open `/generate-config/` to build the file with a form: edit the name, logo, theme and tiles, then download `config.json` and replace the one in `public/`. The form starts from the current config and refuses to download until every field is valid. Nothing is sent to the server. The page is not linked from the portal.
+
+## File browser
+
+Add `"fileBrowser": { "folder": "files", "title": "Files" }` to `config.json` and the portal shows an extra tile that opens `/file-browser/`. That page lists the content of `public/files/` (the `folder` value is a single folder name inside `public/`), lets visitors open subfolders and download any file. `title` is optional.
+
+A browser cannot list a server folder, so the build scans the folder and writes `files-manifest.json` next to `index.html`. In `npm run dev` the list is computed on every request. After uploading files to the server by hand, the list does not change until the next build and deploy.
 
 ## Themes
 

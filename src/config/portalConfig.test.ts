@@ -67,19 +67,31 @@ describe("validateConfig", () => {
   });
 });
 
-describe("validateConfig: logos and background", () => {
-  it("keeps valid header logos and background", () => {
+describe("validateConfig: logos, background and file browser", () => {
+  it("keeps valid header logos, background and file browser", () => {
     const config = {
       ...validConfig,
       brand: { ...validConfig.brand, logos: { left: "/images/a.jpg", right: "/images/b.jpg" }, background: "/images/bg.jpg" },
+      fileBrowser: { folder: "files", title: " Documents " },
     };
     const result = validateConfig(config);
     expect(result.ok && result.config.brand.logos).toEqual({ left: "/images/a.jpg", right: "/images/b.jpg" });
     expect(result.ok && result.config.brand.background).toBe("/images/bg.jpg");
+    expect(result.ok && result.config.fileBrowser).toEqual({ folder: "files", title: "Documents" });
+  });
+
+  it("uses a default title for the file browser", () => {
+    const result = validateConfig({ ...validConfig, fileBrowser: { folder: "files" } });
+    expect(result.ok && result.config.fileBrowser).toEqual({ folder: "files", title: "Files" });
   });
 
   it("rejects a logo or background hosted on another site", () => {
     const brand = { ...validConfig.brand, logos: { left: "https://other.test/a.jpg" }, background: "//other.test/bg.jpg" };
     expect(errorsOf({ ...validConfig, brand })).toHaveLength(2);
+  });
+
+  it("rejects a file browser folder that could leave public/", () => {
+    expect(errorsOf({ ...validConfig, fileBrowser: { folder: "../secrets" } })[0]).toContain("File browser folder");
+    expect(errorsOf({ ...validConfig, fileBrowser: { folder: "a/b" } })[0]).toContain("File browser folder");
   });
 });

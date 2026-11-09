@@ -136,6 +136,27 @@
           }
         }
       }
+    },
+    "fileBrowser": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "folder"
+      ],
+      "description": "Adds a page where visitors browse and download the files of a folder in public/. The file list is made at build time.",
+      "properties": {
+        "folder": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "description": "Name of a folder inside public/, such as files."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "default": "Files",
+          "description": "Name of the tile and of the page."
+        }
+      }
     }
   }
 }
