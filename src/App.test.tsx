@@ -58,4 +58,18 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "Config generator" })).toBeInTheDocument();
   });
+
+  it("shows a link back to the portal on the file browser page", async () => {
+    const config = { ...TEST_CONFIG, fileBrowsers: [{ folder: "files", title: "Files" }] };
+    const fetchStub = vi.fn(async (url: string) => ({
+      ok: true,
+      status: 200,
+      json: async () => (url.includes("files-manifest") ? { folders: { files: [] } } : config),
+    }));
+    vi.stubGlobal("fetch", fetchStub);
+    window.history.pushState({}, "", "/file-browser/?folder=files");
+    render(<App />);
+
+    expect(await screen.findByRole("link", { name: /Back to the portal/ })).toHaveAttribute("href", "/");
+  });
 });

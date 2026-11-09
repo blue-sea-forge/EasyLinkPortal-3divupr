@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, Folder } from "lucide-react";
+import { ArrowLeft, Download, Folder } from "lucide-react";
 import { Header } from "../components/Header";
 import { LoadingNotice } from "../components/LoadingNotice";
 import { StatusPage } from "../components/StatusPage";
@@ -54,6 +54,10 @@ function FileList({ fileBrowser }: { fileBrowser: FileBrowserConfig }) {
 
   return (
     <>
+      <a className="button button-secondary back-link" href="/">
+        <ArrowLeft size={18} aria-hidden="true" />
+        Back to the portal
+      </a>
       <h1 className="file-title">{fileBrowser.title}</h1>
       <nav className="breadcrumb" aria-label="Folder path">
         <a href={fileBrowserHref(fileBrowser.folder)}>Home</a>
