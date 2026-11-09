@@ -16,7 +16,6 @@
     { "label": "Terminator", "description": "\"I'll be back.\"", "url": "https://script.google.com/macros/s/AKfycbwLA2l16d7dwgrUU6m0dmiX3jMtwDWyOf5DvaEYr9p5O6GfRJuYTwZ3b1VFmjjG0gFZHw/exec", "icon": "file-text" }
   ],
   "fileBrowsers": [
-    { "folder": "files", "title": "Fichiers" },
-    { "folder": "documents", "title": "Documents" }
+    { "folder": "missions", "title": "\"Votre mission, si vous l'acceptez...\"" }
   ]
 }

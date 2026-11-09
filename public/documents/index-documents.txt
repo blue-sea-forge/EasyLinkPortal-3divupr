@@ -1,3 +1,0 @@
-Documents de reference.
-
-Ce dossier est un second navigateur de fichiers.

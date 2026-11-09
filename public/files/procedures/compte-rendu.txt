@@ -1,3 +1,0 @@
-Compte rendu de test
-
-Ce fichier se trouve dans un sous-dossier.
