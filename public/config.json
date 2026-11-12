@@ -14,7 +14,7 @@
   "tiles": [
     { "label": "Moodle", "description": "Source d'entrainement", "url": "https://moodle.si-upr-3div.fr/", "icon": "graduation-cap" },
     { "label": "Terminator", "description": "\"I'll be back.\"", "url": "https://script.google.com/macros/s/AKfycbwLA2l16d7dwgrUU6m0dmiX3jMtwDWyOf5DvaEYr9p5O6GfRJuYTwZ3b1VFmjjG0gFZHw/exec", "icon": "file-text" },
-    { "label": "Missions", "description": "\"Votre mission, si vous l'acceptez.\"", "url": "https://script.google.com/macros/s/AKfycbyiO2clTPSGrN02ZCrZ1jE1VltOV6CahadTKOeT1Rp0VIVPQE36Xo34zd7nU7EUC4bm/exec?app=missions", "icon": "book-open" }
+    { "label": "Missions", "description": "\"Votre mission, si vous l'acceptez.\"", "url": "https://script.google.com/macros/s/AKfycbyiO2clTPSGrN02ZCrZ1jE1VltOV6CahadTKOeT1Rp0VIVPQE36Xo34zd7nU7EUC4bm/exec?app=missions", "icon": "book-open" },
     { "label": "Commandes matériels", "description": "\"Choisissez, périssez...\"", "url": "https://script.google.com/macros/s/AKfycbyJXo-1Xtak-BmsfPhB1odqtqAILuzg9-2TK9FtGhapHvDa8Bv_xyNAhT94h9M4GEVuEA/exec", "icon": "book-open" }
   ],
   "fileBrowsers": []
